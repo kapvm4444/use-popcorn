@@ -1,5 +1,4 @@
-import React, { useState } from "react";
-import { tempMovieData, tempWatchedData } from "../movieData";
+import React from "react";
 import MovieList from "./MovieList";
 import WatchedBox from "./WatchedBox";
 
