@@ -7,6 +7,8 @@ import MovieList from "./components/MovieList";
 import WatchedSummary from "./components/WatchedSummary";
 import WatchedMovieList from "./components/WatchedMovieList";
 
+const fetchURL = "http://www.omdbapi.com/?i=tt3896198&apikey=18173ef0";
+
 export default function App() {
   const [movies, setMovies] = useState(tempMovieData);
   const [watched, setWatched] = useState(tempWatchedData);
