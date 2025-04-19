@@ -7,15 +7,25 @@ import WatchedSummary from "./components/WatchedSummary";
 import WatchedMovieList from "./components/WatchedMovieList";
 import Loader from "./components/Loader";
 import ErrorMessage from "./components/ErrorMessage";
+import MovieDetails from "./components/MovieDetails";
 
-const key = "18173ef0";
+const APIkey = "18173ef0";
 
 export default function App() {
-  const [query, setQuery] = useState("Interstellar");
+  const [query, setQuery] = useState("");
   const [movies, setMovies] = useState([]);
   const [watched, setWatched] = useState([]);
   const [isLoading, setIsLoading] = useState(false);
   const [errMessage, setErrMessage] = useState("");
+  const [selectedId, setSelectedId] = useState(null);
+
+  function handleSelectMovie(selectedId) {
+    setSelectedId((oldId) => (oldId === selectedId ? null : selectedId));
+  }
+
+  function handleCloseDetail() {
+    setSelectedId(null);
+  }
 
   //using side effect for getting the data from api
   useEffect(
@@ -26,7 +36,7 @@ export default function App() {
           setIsLoading(true);
 
           const res = await fetch(
-            `http://www.omdbapi.com/?&s=${query}&apikey=${key}`,
+            `http://www.omdbapi.com/?&s=${query}&apikey=${APIkey}`,
           );
 
           if (!res.ok)
@@ -67,13 +77,25 @@ export default function App() {
       <Main>
         <Box>
           {isLoading && <Loader />}
-          {!isLoading && !errMessage && <MovieList movies={movies} />}
+          {!isLoading && !errMessage && (
+            <MovieList movies={movies} onSelectMovie={handleSelectMovie} />
+          )}
           {errMessage && <ErrorMessage errMessage={errMessage} />}
         </Box>
 
         <Box>
-          <WatchedSummary watched={watched} />
-          <WatchedMovieList watched={watched} />
+          {selectedId ? (
+            <MovieDetails
+              selectedId={selectedId}
+              onCloseDetails={handleCloseDetail}
+              APIkey={APIkey}
+            />
+          ) : (
+            <>
+              <WatchedSummary watched={watched} />
+              <WatchedMovieList watched={watched} />
+            </>
+          )}
         </Box>
       </Main>
     </>
