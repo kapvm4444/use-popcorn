@@ -4,9 +4,7 @@ export default function Navbar({ children }) {
   return <nav className="nav-bar">{children}</nav>;
 }
 
-export function Search() {
-  const [query, setQuery] = useState("");
-
+export function Search({ query, setQuery }) {
   return (
     <input
       className="search"
@@ -21,7 +19,7 @@ export function Search() {
 export function NumResults({ movies }) {
   return (
     <p className="num-results">
-      Found <strong>{movies.length}</strong> results
+      Found <strong>{movies?.length}</strong> results
     </p>
   );
 }
