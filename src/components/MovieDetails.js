@@ -47,7 +47,7 @@ export default function MovieDetails({ selectedId, onCloseDetails, APIkey }) {
           <header>
             <button className="btn-back">&larr;</button>
 
-            <img src={poster} alt={`Poster of ${movie}`} />
+            <img src={poster} alt={`Poster of ${title}`} />
 
             <div className={"details-overview"}>
               <h2>{title}</h2>

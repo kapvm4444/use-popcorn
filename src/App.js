@@ -32,8 +32,8 @@ export default function App() {
     function () {
       async function getMovies() {
         try {
-          setErrMessage("");
           setIsLoading(true);
+          setErrMessage("");
 
           const res = await fetch(
             `http://www.omdbapi.com/?&s=${query}&apikey=${APIkey}`,
@@ -47,6 +47,7 @@ export default function App() {
 
           setMovies(data.Search);
           setIsLoading(false);
+          setErrMessage("");
         } catch (err) {
           setErrMessage(err.message);
           setMovies([]);
