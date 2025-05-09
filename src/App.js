@@ -27,6 +27,14 @@ export default function App() {
     setSelectedId(null);
   }
 
+  function handleAddWatched(movie) {
+    setWatched((watched) => [...watched, movie]);
+  }
+
+  function handleRemoveWatched(id) {
+    setWatched((movies) => movies.filter((movie) => movie.imdbID !== id));
+  }
+
   //using side effect for getting the data from api
   useEffect(
     function () {
@@ -36,7 +44,7 @@ export default function App() {
           setErrMessage("");
 
           const res = await fetch(
-            `http://www.omdbapi.com/?&s=${query}&apikey=${APIkey}`,
+            `https://www.omdbapi.com/?&s=${query}&apikey=${APIkey}`,
           );
 
           if (!res.ok)
@@ -90,11 +98,16 @@ export default function App() {
               selectedId={selectedId}
               onCloseDetails={handleCloseDetail}
               APIkey={APIkey}
+              onAddWatched={handleAddWatched}
+              watched={watched}
             />
           ) : (
             <>
               <WatchedSummary watched={watched} />
-              <WatchedMovieList watched={watched} />
+              <WatchedMovieList
+                watched={watched}
+                onDeleteWatchedMovie={handleRemoveWatched}
+              />
             </>
           )}
         </Box>

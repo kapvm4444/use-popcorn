@@ -2,9 +2,18 @@ import React, { useEffect, useState } from "react";
 import RatingStar from "./RatingStar";
 import Loader from "./Loader";
 
-export default function MovieDetails({ selectedId, onCloseDetails, APIkey }) {
+export default function MovieDetails({
+  selectedId,
+  onCloseDetails,
+  APIkey,
+  onAddWatched,
+  watched,
+}) {
   const [movie, setMovie] = useState({});
   const [isLoding, setIsLoading] = useState(false);
+  const [userRating, setUserRating] = useState("");
+
+  const isWatched = watched.map((movie) => movie.imdbID).includes(selectedId);
 
   const {
     Title: title,
@@ -19,6 +28,21 @@ export default function MovieDetails({ selectedId, onCloseDetails, APIkey }) {
     Genre: genre,
   } = movie;
 
+  function handleAddWatched() {
+    const watchedMovie = {
+      imdbID: selectedId,
+      title,
+      imdbRating: Number(imdbRating),
+      runtime: Number(runtime.split(" ").at(0)),
+      year,
+      poster,
+      userRating,
+    };
+
+    onAddWatched(watchedMovie);
+    onCloseDetails();
+  }
+
   useEffect(
     function () {
       async function getMovieDetails() {
@@ -31,6 +55,8 @@ export default function MovieDetails({ selectedId, onCloseDetails, APIkey }) {
 
         setMovie(data);
         setIsLoading(false);
+        console.log(data);
+        document.title = `Movie | ${data.Title}`;
       }
 
       getMovieDetails();
@@ -45,7 +71,9 @@ export default function MovieDetails({ selectedId, onCloseDetails, APIkey }) {
       ) : (
         <div className="details">
           <header>
-            <button className="btn-back">&larr;</button>
+            <button className="btn-back" onClick={onCloseDetails}>
+              &larr;
+            </button>
 
             <img src={poster} alt={`Poster of ${title}`} />
 
@@ -63,10 +91,40 @@ export default function MovieDetails({ selectedId, onCloseDetails, APIkey }) {
           </header>
 
           <section>
-            <div className={"rating"}>
-              <RatingStar size={24} maxRating={10} />
+            <div
+              className={"rating"}
+              style={{ alignItems: "center", textAlign: "center" }}
+            >
+              {!isWatched ? (
+                <>
+                  <RatingStar
+                    size={24}
+                    maxRating={10}
+                    onSetRate={setUserRating}
+                  />
+                  {userRating > 0 && (
+                    <button
+                      className="btn-add"
+                      style={{ width: "100%" }}
+                      onClick={handleAddWatched}
+                    >
+                      + Add to List
+                    </button>
+                  )}
+                </>
+              ) : (
+                <p>
+                  You already watched and rated{" "}
+                  <span style={{ fontWeight: "bolder" }}>
+                    {
+                      watched.filter((movie) => movie.imdbID === selectedId)[0]
+                        ?.userRating
+                    }{" "}
+                    Star 🌟
+                  </span>
+                </p>
+              )}
             </div>
-
             <p>
               <em>{plot}</em>
             </p>
