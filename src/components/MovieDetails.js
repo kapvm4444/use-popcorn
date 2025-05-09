@@ -55,13 +55,21 @@ export default function MovieDetails({
 
         setMovie(data);
         setIsLoading(false);
-        console.log(data);
-        document.title = `Movie | ${data.Title}`;
       }
 
       getMovieDetails();
     },
     [selectedId],
+  );
+
+  useEffect(
+    function () {
+      if (!title) return;
+      document.title = `Movie | ${movie.Title}`;
+
+      return () => (document.title = "IMDB");
+    },
+    [title],
   );
 
   return (
