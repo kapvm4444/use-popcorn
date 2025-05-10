@@ -38,6 +38,8 @@ export default function App() {
   //using side effect for getting the data from api
   useEffect(
     function () {
+      const controller = new AbortController();
+
       async function getMovies() {
         try {
           setIsLoading(true);
@@ -45,6 +47,7 @@ export default function App() {
 
           const res = await fetch(
             `https://www.omdbapi.com/?&s=${query}&apikey=${APIkey}`,
+            { signal: controller.signal },
           );
 
           if (!res.ok)
@@ -57,8 +60,10 @@ export default function App() {
           setIsLoading(false);
           setErrMessage("");
         } catch (err) {
-          setErrMessage(err.message);
-          setMovies([]);
+          if (err.name !== "AbortError") {
+            setErrMessage(err.message);
+            setMovies([]);
+          }
         } finally {
           setIsLoading(false);
         }
@@ -71,6 +76,10 @@ export default function App() {
       }
 
       getMovies();
+
+      return function () {
+        controller.abort();
+      };
     },
     [query],
   );

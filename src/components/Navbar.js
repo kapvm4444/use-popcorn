@@ -1,12 +1,24 @@
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 
 export default function Navbar({ children }) {
   return <nav className="nav-bar">{children}</nav>;
 }
 
 export function Search({ query, setQuery }) {
+  useEffect(function () {
+    const searchBar = document.getElementById("search");
+
+    document.addEventListener("keypress", function (evt) {
+      if (evt.key === "/") {
+        evt.preventDefault();
+        searchBar.focus();
+      }
+    });
+  }, []);
+
   return (
     <input
+      id="search"
       className="search"
       type="text"
       placeholder="Search movies..."

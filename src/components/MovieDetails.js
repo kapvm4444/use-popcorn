@@ -45,6 +45,23 @@ export default function MovieDetails({
 
   useEffect(
     function () {
+      function handleEscape(evt) {
+        if (evt.key === "Escape") {
+          onCloseDetails();
+        }
+      }
+
+      document.addEventListener("keydown", handleEscape);
+
+      return function () {
+        document.removeEventListener("keydown", handleEscape);
+      };
+    },
+    [onCloseDetails],
+  );
+
+  useEffect(
+    function () {
       async function getMovieDetails() {
         setIsLoading(true);
         const res = await fetch(
