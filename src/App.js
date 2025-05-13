@@ -8,17 +8,23 @@ import WatchedMovieList from "./components/WatchedMovieList";
 import Loader from "./components/Loader";
 import ErrorMessage from "./components/ErrorMessage";
 import MovieDetails from "./components/MovieDetails";
+import { useMovies } from "./hooks/useMovies";
 
 const APIkey = "18173ef0";
 
 export default function App() {
+  //variables
   const [query, setQuery] = useState("");
-  const [movies, setMovies] = useState([]);
-  const [watched, setWatched] = useState([]);
-  const [isLoading, setIsLoading] = useState(false);
-  const [errMessage, setErrMessage] = useState("");
+  const { isLoading, errMessage, movies } = useMovies(query, setQuery);
+  const [watched, setWatched] = useState(function () {
+    const data = JSON.parse(localStorage.getItem("watched"));
+    if (data) return data;
+    else return [];
+  });
+
   const [selectedId, setSelectedId] = useState(null);
 
+  //handlers
   function handleSelectMovie(selectedId) {
     setSelectedId((oldId) => (oldId === selectedId ? null : selectedId));
   }
@@ -35,53 +41,11 @@ export default function App() {
     setWatched((movies) => movies.filter((movie) => movie.imdbID !== id));
   }
 
-  //using side effect for getting the data from api
   useEffect(
     function () {
-      const controller = new AbortController();
-
-      async function getMovies() {
-        try {
-          setIsLoading(true);
-          setErrMessage("");
-
-          const res = await fetch(
-            `https://www.omdbapi.com/?&s=${query}&apikey=${APIkey}`,
-            { signal: controller.signal },
-          );
-
-          if (!res.ok)
-            throw new Error("Something went wrong while getting the movies");
-          const data = await res.json();
-
-          if (data.Response === "False") throw new Error("No Movies Found");
-
-          setMovies(data.Search);
-          setIsLoading(false);
-          setErrMessage("");
-        } catch (err) {
-          if (err.name !== "AbortError") {
-            setErrMessage(err.message);
-            setMovies([]);
-          }
-        } finally {
-          setIsLoading(false);
-        }
-      }
-
-      if (query.length < 3) {
-        setMovies([]);
-        setErrMessage("");
-        return;
-      }
-
-      getMovies();
-
-      return function () {
-        controller.abort();
-      };
+      localStorage.setItem("watched", JSON.stringify(watched));
     },
-    [query],
+    [watched],
   );
 
   return (

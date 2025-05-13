@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from "react";
+import React, { useEffect, useRef, useState } from "react";
 import RatingStar from "./RatingStar";
 import Loader from "./Loader";
 
@@ -12,6 +12,7 @@ export default function MovieDetails({
   const [movie, setMovie] = useState({});
   const [isLoding, setIsLoading] = useState(false);
   const [userRating, setUserRating] = useState("");
+  const countRating = useRef(0);
 
   const isWatched = watched.map((movie) => movie.imdbID).includes(selectedId);
 
@@ -37,11 +38,19 @@ export default function MovieDetails({
       year,
       poster,
       userRating,
+      countRatingDecision: countRating.current,
     };
 
     onAddWatched(watchedMovie);
     onCloseDetails();
   }
+
+  useEffect(
+    function () {
+      if (userRating) countRating.current++;
+    },
+    [userRating],
+  );
 
   useEffect(
     function () {
@@ -76,7 +85,7 @@ export default function MovieDetails({
 
       getMovieDetails();
     },
-    [selectedId],
+    [selectedId, APIkey],
   );
 
   useEffect(
@@ -86,7 +95,7 @@ export default function MovieDetails({
 
       return () => (document.title = "IMDB");
     },
-    [title],
+    [title, movie.Title],
   );
 
   return (

@@ -1,28 +1,41 @@
-import React, { useEffect, useState } from "react";
+import React, { useEffect, useRef } from "react";
 
 export default function Navbar({ children }) {
   return <nav className="nav-bar">{children}</nav>;
 }
 
 export function Search({ query, setQuery }) {
-  useEffect(function () {
-    const searchBar = document.getElementById("search");
+  const searchBar = useRef(null);
 
-    document.addEventListener("keypress", function (evt) {
-      if (evt.key === "/") {
-        evt.preventDefault();
-        searchBar.focus();
+  useEffect(
+    function () {
+      function handlerSearchFocus(evt) {
+        if (document.activeElement === searchBar.current) {
+          if (evt.code === "Enter") {
+            searchBar.current.blur();
+          }
+        } else if (evt.key === "/") {
+          setQuery("");
+          evt.preventDefault();
+          searchBar.current.focus();
+        }
       }
-    });
-  }, []);
+
+      document.addEventListener("keydown", handlerSearchFocus);
+
+      return () => document.removeEventListener("keydown", handlerSearchFocus);
+    },
+    [setQuery],
+  );
 
   return (
     <input
       id="search"
       className="search"
       type="text"
-      placeholder="Search movies..."
+      placeholder="Search (Press '/' )"
       value={query}
+      ref={searchBar}
       onChange={(e) => setQuery(e.target.value)}
     />
   );
