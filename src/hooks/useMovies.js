@@ -2,7 +2,7 @@ import { useEffect, useState } from "react";
 
 const APIkey = "18173ef0";
 
-export function useMovies(query, setQuery) {
+export function useMovies(query) {
   const [movies, setMovies] = useState([]);
   const [isLoading, setIsLoading] = useState(false);
   const [errMessage, setErrMessage] = useState("");

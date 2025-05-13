@@ -1,6 +1,7 @@
 import React, { useEffect, useRef, useState } from "react";
 import RatingStar from "./RatingStar";
 import Loader from "./Loader";
+import { useKey } from "../hooks/useKey";
 
 export default function MovieDetails({
   selectedId,
@@ -45,6 +46,7 @@ export default function MovieDetails({
     onCloseDetails();
   }
 
+  //hooks
   useEffect(
     function () {
       if (userRating) countRating.current++;
@@ -52,22 +54,7 @@ export default function MovieDetails({
     [userRating],
   );
 
-  useEffect(
-    function () {
-      function handleEscape(evt) {
-        if (evt.key === "Escape") {
-          onCloseDetails();
-        }
-      }
-
-      document.addEventListener("keydown", handleEscape);
-
-      return function () {
-        document.removeEventListener("keydown", handleEscape);
-      };
-    },
-    [onCloseDetails],
-  );
+  useKey("Escape", onCloseDetails);
 
   useEffect(
     function () {

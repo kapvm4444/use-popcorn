@@ -1,6 +1,6 @@
 import Navbar, { Logo, NumResults, Search } from "./components/Navbar";
 import Main from "./components/Main";
-import React, { useEffect, useState } from "react";
+import React, { useState } from "react";
 import Box from "./components/Box";
 import MovieList from "./components/MovieList";
 import WatchedSummary from "./components/WatchedSummary";
@@ -9,18 +9,15 @@ import Loader from "./components/Loader";
 import ErrorMessage from "./components/ErrorMessage";
 import MovieDetails from "./components/MovieDetails";
 import { useMovies } from "./hooks/useMovies";
+import { useLocalStorageState } from "./hooks/useLocalStorageState";
 
 const APIkey = "18173ef0";
 
 export default function App() {
   //variables
   const [query, setQuery] = useState("");
-  const { isLoading, errMessage, movies } = useMovies(query, setQuery);
-  const [watched, setWatched] = useState(function () {
-    const data = JSON.parse(localStorage.getItem("watched"));
-    if (data) return data;
-    else return [];
-  });
+  const { isLoading, errMessage, movies } = useMovies(query);
+  const [watched, setWatched] = useLocalStorageState([], "watched");
 
   const [selectedId, setSelectedId] = useState(null);
 
@@ -40,13 +37,6 @@ export default function App() {
   function handleRemoveWatched(id) {
     setWatched((movies) => movies.filter((movie) => movie.imdbID !== id));
   }
-
-  useEffect(
-    function () {
-      localStorage.setItem("watched", JSON.stringify(watched));
-    },
-    [watched],
-  );
 
   return (
     <>

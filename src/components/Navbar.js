@@ -1,4 +1,5 @@
-import React, { useEffect, useRef } from "react";
+import React, { useRef } from "react";
+import { useKey } from "../hooks/useKey";
 
 export default function Navbar({ children }) {
   return <nav className="nav-bar">{children}</nav>;
@@ -7,33 +8,19 @@ export default function Navbar({ children }) {
 export function Search({ query, setQuery }) {
   const searchBar = useRef(null);
 
-  useEffect(
-    function () {
-      function handlerSearchFocus(evt) {
-        if (document.activeElement === searchBar.current) {
-          if (evt.code === "Enter") {
-            searchBar.current.blur();
-          }
-        } else if (evt.key === "/") {
-          setQuery("");
-          evt.preventDefault();
-          searchBar.current.focus();
-        }
-      }
-
-      document.addEventListener("keydown", handlerSearchFocus);
-
-      return () => document.removeEventListener("keydown", handlerSearchFocus);
-    },
-    [setQuery],
-  );
+  useKey("Enter", function () {
+    if (document.activeElement === searchBar.current)
+      return searchBar.current.blur();
+    searchBar.current.focus();
+    setQuery("");
+  });
 
   return (
     <input
       id="search"
       className="search"
       type="text"
-      placeholder="Search (Press '/' )"
+      placeholder="Search (Press 'Enter')"
       value={query}
       ref={searchBar}
       onChange={(e) => setQuery(e.target.value)}
